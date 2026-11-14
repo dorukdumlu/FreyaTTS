@@ -1,0 +1,67 @@
+{"id": "date-01", "cat": "date", "text": "Doğum tarihiniz 14.03.1988 mi?", "spoken": ["Doğum tarihiniz on dört mart bin dokuz yüz seksen sekiz mi?"]}
+{"id": "date-02", "cat": "date", "text": "Randevunuz 21.11.2026 tarihinde.", "spoken": ["Randevunuz yirmi bir kasım iki bin yirmi altı tarihinde."]}
+{"id": "date-03", "cat": "date", "text": "Poliçeniz 01.01.2027'de sona eriyor.", "spoken": ["Poliçeniz bir ocak iki bin yirmi yedi'de sona eriyor."]}
+{"id": "date-04", "cat": "date", "text": "Son ödeme tarihi 05/12/2026.", "spoken": ["Son ödeme tarihi beş aralık iki bin yirmi altı."]}
+{"id": "date-05", "cat": "date", "text": "Kartınız 30.06.2025 tarihinde teslim edildi.", "spoken": ["Kartınız otuz haziran iki bin yirmi beş tarihinde teslim edildi."]}
+{"id": "date-06", "cat": "date", "text": "Teslimat 19.05.2026 günü yapılacak.", "spoken": ["Teslimat on dokuz mayıs iki bin yirmi altı günü yapılacak."]}
+{"id": "date-07", "cat": "date", "text": "Başvurunuz 2026-11-14 tarihinde alındı.", "spoken": ["Başvurunuz on dört kasım iki bin yirmi altı tarihinde alındı."]}
+{"id": "date-08", "cat": "date", "text": "Sözleşmeniz 28.02.2026 itibarıyla yenilendi.", "spoken": ["Sözleşmeniz yirmi sekiz şubat iki bin yirmi altı itibarıyla yenilendi."]}
+{"id": "zero-01", "cat": "zeros", "text": "Kartınızın son dört hanesi 0042.", "spoken": ["Kartınızın son dört hanesi sıfır sıfır dört iki.", "Kartınızın son dört hanesi sıfır sıfır kırk iki."]}
+{"id": "zero-02", "cat": "zeros", "text": "Doğrulama kodunuz 0718.", "spoken": ["Doğrulama kodunuz sıfır yedi bir sekiz.", "Doğrulama kodunuz sıfır yedi on sekiz."]}
+{"id": "zero-03", "cat": "zeros", "text": "Dahili numaramız 007.", "spoken": ["Dahili numaramız sıfır sıfır yedi."]}
+{"id": "zero-04", "cat": "zeros", "text": "Şube kodunuz 0312 olarak görünüyor.", "spoken": ["Şube kodunuz sıfır üç bir iki olarak görünüyor.", "Şube kodunuz sıfır üç yüz on iki olarak görünüyor.", "Şube kodunuz sıfır üç on iki olarak görünüyor."]}
+{"id": "zero-05", "cat": "zeros", "text": "Kimlik numaranızın son üç hanesi 046.", "spoken": ["Kimlik numaranızın son üç hanesi sıfır dört altı.", "Kimlik numaranızın son üç hanesi sıfır kırk altı."]}
+{"id": "zero-06", "cat": "zeros", "text": "Kapı şifreniz 0905.", "spoken": ["Kapı şifreniz sıfır dokuz sıfır beş."]}
+{"id": "phone-01", "cat": "phone", "text": "Bizi 0850 222 23 35 numarasından arayabilirsiniz.", "spoken": ["Bizi sıfır sekiz yüz elli, iki yüz yirmi iki, yirmi üç, otuz beş numarasından arayabilirsiniz.", "Bizi sıfır sekiz beş sıfır, iki iki iki, iki üç, üç beş numarasından arayabilirsiniz."]}
+{"id": "phone-02", "cat": "phone", "text": "Kayıtlı numaranız 0532 000 00 01 mi?", "spoken": ["Kayıtlı numaranız sıfır beş yüz otuz iki, sıfır sıfır sıfır, sıfır sıfır, sıfır bir mi?", "Kayıtlı numaranız sıfır beş üç iki, sıfır sıfır sıfır, sıfır sıfır, sıfır bir mi?"]}
+{"id": "phone-03", "cat": "phone", "text": "Sizi +90 532 123 45 67 numarasından arayacağız.", "spoken": ["Sizi artı doksan, beş yüz otuz iki, yüz yirmi üç, kırk beş, altmış yedi numarasından arayacağız.", "Sizi doksan, beş yüz otuz iki, yüz yirmi üç, kırk beş, altmış yedi numarasından arayacağız.", "Sizi artı dokuz sıfır, beş üç iki, bir iki üç, dört beş, altı yedi numarasından arayacağız."]}
+{"id": "phone-04", "cat": "phone", "text": "Hasar hattımız 0(212) 555 12 34.", "spoken": ["Hasar hattımız sıfır iki yüz on iki, beş yüz elli beş, on iki, otuz dört.", "Hasar hattımız sıfır iki bir iki, beş beş beş, bir iki, üç dört."]}
+{"id": "phone-05", "cat": "phone", "text": "Numaranız 05321234567 olarak kayıtlı.", "spoken": ["Numaranız sıfır beş üç iki bir iki üç dört beş altı yedi olarak kayıtlı.", "Numaranız sıfır beş yüz otuz iki, yüz yirmi üç, kırk beş, altmış yedi olarak kayıtlı."]}
+{"id": "phone-06", "cat": "phone", "text": "Destek hattımız 0850-222-23-35.", "spoken": ["Destek hattımız sıfır sekiz yüz elli, iki yüz yirmi iki, yirmi üç, otuz beş.", "Destek hattımız sıfır sekiz beş sıfır, iki iki iki, iki üç, üç beş."]}
+{"id": "id-01", "cat": "ids", "text": "Kart numaranız 4543 1234 5678 9010.", "spoken": ["Kart numaranız dört beş dört üç, bir iki üç dört, beş altı yedi sekiz, dokuz sıfır bir sıfır.", "Kart numaranız kırk beş kırk üç, on iki otuz dört, elli altı yetmiş sekiz, doksan on."]}
+{"id": "id-02", "cat": "ids", "text": "Havale için hesap numaranız TR12 0006 4000 0011 2345 6789 01.", "spoken": ["Havale için hesap numaranız TR bir iki, sıfır sıfır sıfır altı, dört sıfır sıfır sıfır, sıfır sıfır bir bir, iki üç dört beş, altı yedi sekiz dokuz, sıfır bir.", "Havale için hesap numaranız te re bir iki, sıfır sıfır sıfır altı, dört sıfır sıfır sıfır, sıfır sıfır bir bir, iki üç dört beş, altı yedi sekiz dokuz, sıfır bir."]}
+{"id": "id-03", "cat": "ids", "text": "Poliçe numaranız 2024-118734.", "spoken": ["Poliçe numaranız iki bin yirmi dört, bir bir sekiz yedi üç dört.", "Poliçe numaranız iki sıfır iki dört, bir bir sekiz yedi üç dört."]}
+{"id": "id-04", "cat": "ids", "text": "Başvuru numaranız 20261114.", "spoken": ["Başvuru numaranız iki sıfır iki altı bir bir bir dört."]}
+{"id": "id-05", "cat": "ids", "text": "Müşteri numaranız 004512.", "spoken": ["Müşteri numaranız sıfır sıfır dört beş bir iki."]}
+{"id": "time-01", "cat": "time", "text": "Randevunuz saat 14:45'te.", "spoken": ["Randevunuz saat on dört kırk beş'te."]}
+{"id": "time-02", "cat": "time", "text": "Kurye saat 09:05'te kapınızda olacak.", "spoken": ["Kurye saat dokuz sıfır beş'te kapınızda olacak.", "Kurye saat dokuzu beş geçe kapınızda olacak."]}
+{"id": "time-03", "cat": "time", "text": "Sizi saat 14.45'te arayacağız.", "spoken": ["Sizi saat on dört kırk beş'te arayacağız."]}
+{"id": "time-04", "cat": "time", "text": "Kurye perşembe 09:00-13:00 arası gelecek.", "spoken": ["Kurye perşembe dokuz ile on üç arası gelecek.", "Kurye perşembe dokuz on üç arası gelecek.", "Kurye perşembe dokuzla on üç arası gelecek."]}
+{"id": "time-05", "cat": "time", "text": "Şubemiz 09:00–17:30 saatleri arasında açık.", "spoken": ["Şubemiz dokuz ile on yedi otuz saatleri arasında açık.", "Şubemiz dokuz on yedi otuz saatleri arasında açık.", "Şubemiz dokuz ile on yedi buçuk saatleri arasında açık."]}
+{"id": "time-06", "cat": "time", "text": "Toplantı 16:30'da başlayacak.", "spoken": ["Toplantı on altı otuz'da başlayacak.", "Toplantı on altı buçukta başlayacak."]}
+{"id": "time-07", "cat": "time", "text": "Teslimat 14:00 ile 18:00 arasında yapılacak.", "spoken": ["Teslimat on dört ile on sekiz arasında yapılacak."]}
+{"id": "time-08", "cat": "time", "text": "Çağrı merkezimiz 08.30'da açılıyor.", "spoken": ["Çağrı merkezimiz sekiz otuz'da açılıyor.", "Çağrı merkezimiz sekiz buçukta açılıyor."]}
+{"id": "dec-01", "cat": "decimal", "text": "Faiz oranı %3,49 olarak güncellendi.", "spoken": ["Faiz oranı yüzde üç virgül kırk dokuz olarak güncellendi."]}
+{"id": "dec-02", "cat": "decimal", "text": "Faiz oranı %3.5 olarak güncellendi.", "spoken": ["Faiz oranı yüzde üç virgül beş olarak güncellendi.", "Faiz oranı yüzde üç buçuk olarak güncellendi.", "Faiz oranı yüzde üç nokta beş olarak güncellendi."]}
+{"id": "dec-03", "cat": "decimal", "text": "Size %15 indirim tanımlandı.", "spoken": ["Size yüzde on beş indirim tanımlandı."]}
+{"id": "dec-04", "cat": "decimal", "text": "Prim tutarınız 15% arttı.", "spoken": ["Prim tutarınız yüzde on beş arttı."]}
+{"id": "dec-05", "cat": "decimal", "text": "Dolar kuru 34,75 seviyesinde.", "spoken": ["Dolar kuru otuz dört virgül yetmiş beş seviyesinde."]}
+{"id": "dec-06", "cat": "decimal", "text": "Ortalama bekleme süresi 1.5 dakika.", "spoken": ["Ortalama bekleme süresi bir virgül beş dakika.", "Ortalama bekleme süresi bir buçuk dakika.", "Ortalama bekleme süresi bir nokta beş dakika."]}
+{"id": "dec-07", "cat": "decimal", "text": "Komisyon oranı % 0,25.", "spoken": ["Komisyon oranı yüzde sıfır virgül yirmi beş."]}
+{"id": "money-01", "cat": "money", "text": "Borcunuz 2.450,75 TL.", "spoken": ["Borcunuz iki bin dört yüz elli lira yetmiş beş kuruş.", "Borcunuz iki bin dört yüz elli virgül yetmiş beş lira."]}
+{"id": "money-02", "cat": "money", "text": "Asgari ödeme tutarınız 1.000 TL.", "spoken": ["Asgari ödeme tutarınız bin lira."]}
+{"id": "money-03", "cat": "money", "text": "Hesabınıza ₺250 iade yapıldı.", "spoken": ["Hesabınıza iki yüz elli lira iade yapıldı."]}
+{"id": "money-04", "cat": "money", "text": "Yıllık aidat 10,00 TL.", "spoken": ["Yıllık aidat on lira.", "Yıllık aidat on virgül sıfır sıfır lira."]}
+{"id": "money-05", "cat": "money", "text": "Toplam borcunuz 2450.75 TL.", "spoken": ["Toplam borcunuz iki bin dört yüz elli lira yetmiş beş kuruş.", "Toplam borcunuz iki bin dört yüz elli virgül yetmiş beş lira."]}
+{"id": "money-06", "cat": "money", "text": "İşlem ücreti 0,50 TL.", "spoken": ["İşlem ücreti elli kuruş.", "İşlem ücreti sıfır virgül elli lira."]}
+{"id": "money-07", "cat": "money", "text": "Taksit tutarı 349,90 TL.", "spoken": ["Taksit tutarı üç yüz kırk dokuz lira doksan kuruş.", "Taksit tutarı üç yüz kırk dokuz virgül doksan lira."]}
+{"id": "money-08", "cat": "money", "text": "Ödemeniz 1250TL olarak alındı.", "spoken": ["Ödemeniz bin iki yüz elli lira olarak alındı."]}
+{"id": "ord-01", "cat": "ordinal", "text": "Kredinizin 3. taksiti gecikmiş görünüyor.", "spoken": ["Kredinizin üçüncü taksiti gecikmiş görünüyor."]}
+{"id": "ord-02", "cat": "ordinal", "text": "Ofisimiz binanın 12. katında.", "spoken": ["Ofisimiz binanın on ikinci katında."]}
+{"id": "ord-03", "cat": "ordinal", "text": "Bu ay sizi 2. kez arıyoruz.", "spoken": ["Bu ay sizi ikinci kez arıyoruz."]}
+{"id": "ord-04", "cat": "ordinal", "text": "Başvurunuz 1. sırada bekliyor.", "spoken": ["Başvurunuz birinci sırada bekliyor."]}
+{"id": "ord-05", "cat": "ordinal", "text": "Ödemenizi ayın 5'inde yapabilirsiniz.", "spoken": ["Ödemenizi ayın beş'inde yapabilirsiniz."]}
+{"id": "sym-01", "cat": "symbols", "text": "Teşekkür ederiz, iyi günler!", "spoken": ["Teşekkür ederiz, iyi günler."]}
+{"id": "sym-02", "cat": "symbols", "text": "Merhaba! Ben bankanızın sesli asistanıyım.", "spoken": ["Merhaba. Ben bankanızın sesli asistanıyım."]}
+{"id": "sym-03", "cat": "symbols", "text": "Kartınız (sonu 4821) kullanıma kapatıldı.", "spoken": ["Kartınız, sonu dört sekiz iki bir, kullanıma kapatıldı.", "Kartınız, sonu kırk sekiz yirmi bir, kullanıma kapatıldı.", "Kartınız, sonu dört bin sekiz yüz yirmi bir, kullanıma kapatıldı."]}
+{"id": "sym-04", "cat": "symbols", "text": "Lütfen “onaylıyorum” deyin.", "spoken": ["Lütfen onaylıyorum deyin."]}
+{"id": "sym-05", "cat": "symbols", "text": "Başvurunuz alındı; 3–5 iş günü içinde dönüş yapacağız.", "spoken": ["Başvurunuz alındı; üç ile beş iş günü içinde dönüş yapacağız.", "Başvurunuz alındı; üç beş iş günü içinde dönüş yapacağız."]}
+{"id": "sym-06", "cat": "symbols", "text": "Aylık ücret 49,90₺.", "spoken": ["Aylık ücret kırk dokuz lira doksan kuruş.", "Aylık ücret kırk dokuz virgül doksan lira."]}
+{"id": "ctrl-01", "cat": "control", "text": "Kurye 3 gün içinde gelecek.", "spoken": ["Kurye üç gün içinde gelecek."]}
+{"id": "ctrl-02", "cat": "control", "text": "Şubemizde 1.250 kişi çalışıyor.", "spoken": ["Şubemizde bin iki yüz elli kişi çalışıyor."]}
+{"id": "ctrl-03", "cat": "control", "text": "Ekstre kesim tarihiniz her ayın 15'i.", "spoken": ["Ekstre kesim tarihiniz her ayın on beş'i."]}
+{"id": "ctrl-04", "cat": "control", "text": "Kartınız kargoya verildi.", "spoken": ["Kartınız kargoya verildi."]}
+{"id": "ctrl-05", "cat": "control", "text": "Size nasıl yardımcı olabilirim?", "spoken": ["Size nasıl yardımcı olabilirim?"]}
+{"id": "ctrl-06", "cat": "control", "text": "Limitiniz 1.250.000 TL olarak belirlendi.", "spoken": ["Limitiniz bir milyon iki yüz elli bin lira olarak belirlendi."]}
+{"id": "ctrl-07", "cat": "control", "text": "Çağrı merkezimiz 444 0 333.", "spoken": ["Çağrı merkezimiz dört yüz kırk dört, sıfır, üç yüz otuz üç.", "Çağrı merkezimiz dört dört dört, sıfır, üç üç üç."]}
+{"id": "ctrl-08", "cat": "control", "text": "Kartınızın son dört hanesi 4821.", "spoken": ["Kartınızın son dört hanesi dört sekiz iki bir.", "Kartınızın son dört hanesi kırk sekiz yirmi bir.", "Kartınızın son dört hanesi dört bin sekiz yüz yirmi bir."]}
