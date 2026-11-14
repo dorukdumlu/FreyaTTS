@@ -26,6 +26,10 @@ SAMPLE_RATE = 48000
 # minimum voiced fraction (pyin) below which a clause is re-sampled
 VOICED_FRAC_MIN = 0.06
 
+# duration scales tried, in order, when a caller-supplied check rejects a clause. The output is deterministic
+# for a text and seed, but a few percent more or fewer frames gives a different take in the same voice.
+RETRY_T_SCALES = (0.92, 1.08, 0.85, 1.15)
+
 # English/foreign words the character vocabulary cannot pronounce as written;
 # transliterated to Turkish phonetics. SFT already teaches common Turkish
 # acronyms natively, so acronyms are left untouched.
@@ -279,7 +283,7 @@ class FreyaTTS:
 
         return cls(model, vae, char_to_id, device=device)
 
-    def synthesize(self, text: str, steps: int = 32, seed: int = LEYLA_SEED) -> np.ndarray:
+    def synthesize(self, text: str, steps: int = 32, seed: int = LEYLA_SEED, check=None) -> np.ndarray:
         """Synthesize `text` and return a float32 waveform at 48 kHz.
 
         Args:
@@ -289,8 +293,13 @@ class FreyaTTS:
                 conditioning, so x0 *is* the voice. The default (LEYLA_SEED) gives the
                 canonical Leyla voice deterministically; other seeds give other people,
                 and some are not Leyla at all.
+            check: Optional `check(wav, sample_rate, text) -> bool`, called on every clause with
+                the normalized text that was synthesized (for example an ASR round trip). A
+                rejected clause is synthesized again with the predicted duration scaled by each
+                of RETRY_T_SCALES until one take passes; if none does, the first take is kept.
+                The seed, and so the voice, stays the same.
         """
-        wav, _, _ = self._synth(text, steps=steps, seed=seed)
+        wav, _, _ = self._synth(text, steps=steps, seed=seed, check=check)
         return wav
 
     def save_wav(self, wav: np.ndarray, path: str):
@@ -305,7 +314,7 @@ class FreyaTTS:
         return torch.tensor([[self.char_to_id.get(ch, UNK_ID) for ch in text]], device=self.device)
 
     @torch.no_grad()
-    def _synth_one(self, text, steps=32, seed=None):
+    def _synth_one(self, text, steps=32, seed=None, t_scale=1.0):
         seed = self.seed if seed is None else seed
         ids = self._ids(text)
         cmask = torch.ones_like(ids, dtype=torch.bool)
@@ -313,7 +322,7 @@ class FreyaTTS:
         # duration head: masked mean over text features -> log frame count
         te = self.model.text_encode(ids)
         pooled = (te * cmask[..., None].float()).sum(1) / (cmask.sum(1, keepdim=True) + 1e-6)
-        T = int(round(math.exp(float(self.model.dur(pooled).squeeze(-1)))))
+        T = int(round(math.exp(float(self.model.dur(pooled).squeeze(-1))) * t_scale))
         # floor keeps short inputs from collapsing, cap keeps runaways bounded
         T = max(self.t_floor, ids.shape[1] + 4, min(300, T))
 
@@ -361,7 +370,7 @@ class FreyaTTS:
                     final.append(" ".join(words[i : i + self.max_words]))
         return [c for c in final if c.strip()]
 
-    def _synth(self, text, steps=32, seed=None, do_norm=True, do_chunk=True):
+    def _synth(self, text, steps=32, seed=None, do_norm=True, do_chunk=True, check=None):
         seed = self.seed if seed is None else seed
         t = normalize(text) if do_norm else text
         # very short inputs rely on the duration floor
@@ -380,6 +389,13 @@ class FreyaTTS:
                 for offset in (1, 2, 3):
                     w2 = self._synth_one(c, steps=steps, seed=seed + offset)
                     if self._voiced_ok(w2):
+                        w = w2
+                        break
+            if check is not None and not check(w, self.sample_rate, c):
+                # rejected take: same seed, slightly different duration
+                for scale in RETRY_T_SCALES:
+                    w2 = self._synth_one(c, steps=steps, seed=seed, t_scale=scale)
+                    if check(w2, self.sample_rate, c):
                         w = w2
                         break
             wavs.append(w.astype(np.float32))

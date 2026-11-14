@@ -143,28 +143,40 @@ class RoundTrip:
         self.cache_path = cache_path
         self.cache = json.load(open(cache_path, encoding="utf-8")) if os.path.exists(cache_path) else {}
 
-    def hear(self, sent, scale):
-        """Returns (transcript, seconds of audio)."""
+    def transcribe(self, wav, sr, band=JUDGE_SR):
         import librosa
         import numpy as np
 
-        k = hashlib.sha1(json.dumps([sent, scale, self.steps, self.tts.seed, self.asr_name]).encode()).hexdigest()
+        wav = librosa.resample(wav.astype(np.float32), orig_sr=sr, target_sr=band)
+        if band != 16000:
+            wav = librosa.resample(wav, orig_sr=band, target_sr=16000)
+        segments, _ = self.asr.transcribe(wav, language="tr", beam_size=5, temperature=0.0,
+                                          condition_on_previous_text=False, suppress_tokens=[-1] + self.numerals)
+        return " ".join(seg.text.strip() for seg in segments).strip()
+
+    def check(self, wav, sr, text):
+        """A `check` for FreyaTTS.synthesize: the full-band transcript must keep the numbers of the clause
+        and most of its words. The judged transcript is made separately, from the 8 kHz final audio."""
+        self.takes += 1
+        verdict = judge(self.transcribe(wav, sr, band=16000), [text])
+        return verdict["key"] and verdict["errors"] <= max(1, verdict["ref_words"] // 4)
+
+    def hear(self, sent, scale, retry=False):
+        """Returns (transcript, seconds of audio)."""
+        k = hashlib.sha1(json.dumps([sent, scale, self.steps, self.tts.seed, self.asr_name] +
+                                    (["retry"] if retry else [])).encode()).hexdigest()
         if k not in self.cache:
             dur = self.tts.model.dur
             if scale != 1.0:
                 self.tts.model.dur = self.Shifted(dur, math.log(scale))
+            self.takes = 0
             try:
-                wav = self.tts._synth(sent, steps=self.steps, do_norm=False)[0]
+                wav = self.tts._synth(sent, steps=self.steps, do_norm=False,
+                                      **({"check": self.check} if retry else {}))[0]
             finally:
                 self.tts.model.dur = dur
-            wav8k = librosa.resample(wav.astype(np.float32), orig_sr=self.tts.sample_rate, target_sr=JUDGE_SR)
-            wav16k = librosa.resample(wav8k, orig_sr=JUDGE_SR, target_sr=16000)
-            segments, _ = self.asr.transcribe(wav16k, language="tr", beam_size=5, temperature=0.0,
-                                              condition_on_previous_text=False,
-                                              suppress_tokens=[-1] + self.numerals)
-            heard = " ".join(seg.text.strip() for seg in segments).strip()
-            self.cache[k] = {"sent": sent, "scale": scale, "heard": heard,
-                             "seconds": round(len(wav) / self.tts.sample_rate, 2)}
+            self.cache[k] = {"sent": sent, "scale": scale, "heard": self.transcribe(wav, self.tts.sample_rate),
+                             "seconds": round(len(wav) / self.tts.sample_rate, 2), "takes": self.takes}
         return self.cache[k]["heard"], self.cache[k]["seconds"]
 
     def save(self):
@@ -173,14 +185,14 @@ class RoundTrip:
             json.dump(self.cache, f, ensure_ascii=False, indent=1)
 
 
-def audio_level(rows, items, trip, scales, oracle):
+def audio_level(rows, items, trip, scales, oracle, retry=False):
     readings = {item["id"]: item["spoken"] for item in items}
     for n, row in enumerate(rows, 1):
         targets = [("audio", row["sent"])] + ([("oracle", readings[row["id"]][0])] if oracle else [])
         for name, sent in targets:
             row[name] = {}
             for scale in scales:
-                heard, seconds = trip.hear(sent, scale)
+                heard, seconds = trip.hear(sent, scale, retry)
                 row[name][str(scale)] = {"heard": heard, "seconds": seconds, **judge(heard, readings[row["id"]])}
         first = row["audio"][str(scales[0])]
         print(f"[{n}/{len(rows)}] {row['id']} key={'ok' if first['key'] else 'NO'} | {row['sent'][:44]!r} -> "
@@ -239,6 +251,8 @@ def main():
     ap.add_argument("--label", default="current")
     ap.add_argument("--audio", action="store_true", help="also synthesize and transcribe back (needs a GPU)")
     ap.add_argument("--oracle", action="store_true", help="with --audio: also synthesize the reference reading")
+    ap.add_argument("--retry", action="store_true",
+                    help="with --audio: give the pipeline an ASR check, so rejected clauses are synthesized again")
     ap.add_argument("--t-scales", default="1.0", help="duration scales, first one is the headline, e.g. 1.0,0.92,1.08")
     ap.add_argument("--steps", type=int, default=32)
     ap.add_argument("--asr", default="large-v3", help="faster-whisper model (eval/benchmark.py uses large-v3)")
@@ -260,7 +274,7 @@ def main():
     if args.audio:
         out = args.out or "."
         trip = RoundTrip(repo, args.device, args.steps, args.asr, os.path.join(out, "roundtrip_cache.json"))
-        audio_level(rows, items, trip, scales, args.oracle)
+        audio_level(rows, items, trip, scales, args.oracle, args.retry)
 
     table = summarize(rows, scales)
     print_table(table, args.label, scales)
