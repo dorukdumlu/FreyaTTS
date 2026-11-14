@@ -71,52 +71,154 @@ def spell_number(n):
     return " ".join(parts)
 
 
+_MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım",
+           "Aralık"]
+_ORDINALS = {"sıfır": "sıfırıncı", "bir": "birinci", "iki": "ikinci", "üç": "üçüncü", "dört": "dördüncü",
+             "beş": "beşinci", "altı": "altıncı", "yedi": "yedinci", "sekiz": "sekizinci", "dokuz": "dokuzuncu",
+             "on": "onuncu", "yirmi": "yirminci", "otuz": "otuzuncu", "kırk": "kırkıncı", "elli": "ellinci",
+             "altmış": "altmışıncı", "yetmiş": "yetmişinci", "seksen": "sekseninci", "doksan": "doksanıncı",
+             "yüz": "yüzüncü", "bin": "bininci", "milyon": "milyonuncu", "milyar": "milyarıncı"}
+# The word between the whole and fractional part. "virgül" is the standard reading.
+DECIMAL_WORD = "virgül"
+_LETTER = "A-Za-zÇĞİÖŞÜçğıöşü"
+
+
+def spell_ordinal(n):
+    """Spell a non-negative integer as a Turkish ordinal (3 -> 'üçüncü')."""
+    words = spell_number(n).split()
+    words[-1] = _ORDINALS[words[-1]]
+    return " ".join(words)
+
+
+def _digits(s):
+    return " ".join(spell_number(int(ch)) for ch in s)
+
+
+def _fraction(digits):
+    # "05" is read "sıfır beş", not "beş"
+    rest = digits.lstrip("0")
+    words = ["sıfır"] * (len(digits) - len(rest))
+    if rest:
+        words.append(spell_number(int(rest)))
+    return " ".join(words)
+
+
+def _group(s):
+    # one group of a phone number: zeros one by one, the rest as a number ("0532" -> sıfır beş yüz otuz iki)
+    rest = s.lstrip("0")
+    return " ".join(["sıfır"] * (len(s) - len(rest)) + ([spell_number(int(rest))] if rest else []))
+
+
+def _date(day, month, year):
+    if 1 <= int(day) <= 31 and 1 <= int(month) <= 12:
+        return f"{spell_number(int(day))} {_MONTHS[int(month) - 1]} {spell_number(int(year))}"
+    return None
+
+
+def _number(s):
+    """A bare digit run with optional dots and one decimal comma."""
+    whole, _, frac = s.partition(",")
+    if "." in whole and not re.fullmatch(r"\d{1,3}(?:\.\d{3})+", whole):
+        parts = whole.split(".")
+        if len(parts) > 2 or frac:
+            # not a thousands grouping: read the parts one by one ("1.2.3" -> bir nokta iki nokta üç)
+            out = " nokta ".join(_group(p) for p in parts)
+            return out + (f" {DECIMAL_WORD} {_fraction(frac)}" if frac else "")
+        whole, frac = parts  # "3.5", "2450.75": a decimal point
+    grouped = "." in whole
+    whole = whole.replace(".", "")
+    if frac:
+        return f"{spell_number(int(whole))} {DECIMAL_WORD} {_fraction(frac)}"
+    if not grouped and (len(whole) >= 6 or (len(whole) > 1 and whole[0] == "0")):
+        return _digits(whole)  # account-style strings and codes keep every digit
+    return spell_number(int(whole))
+
+
 def expand_digits(text):
     """Rewrite digit runs in their spoken Turkish form.
 
     A digit string is orthographically short but phonetically long, and the
     duration head sizes the utterance from the character sequence, so numbers
     left as digits come out truncated. Spelling them out before synthesis is
-    part of the input contract. Clock times read as hour then minute, decimals
-    with "virgül", a leading "%" as "yüzde", long account-style strings digit
-    by digit, everything else as an integer.
+    part of the input contract. Handled, most specific first: lira amounts,
+    percentages, dates, clock times, phone numbers, card numbers and IBANs,
+    ordinals, then plain numbers (thousands dots, decimals, codes with a
+    leading zero and six or more digits digit by digit).
     """
-    def fraction(digits):
-        # "05" is read "sıfır beş", not "beş"
-        rest = digits.lstrip("0")
-        words = ["sıfır"] * (len(digits) - len(rest))
-        if rest:
-            words.append(spell_number(int(rest)))
-        return " ".join(words)
+    t = text
 
-    def spoken(match):
-        s = match.group(0)
-        if ":" in s:
-            hour, minute = s.split(":")
-            out = spell_number(int(hour))
-            if int(minute):
-                out += " " + fraction(minute)
-            return out
-        if "," in s:
-            whole, frac = s.split(",")
-            return spell_number(int(whole.replace(".", ""))) + " virgül " + fraction(frac)
-        if len(s) >= 6 and "." not in s:
-            return " ".join(spell_number(int(ch)) for ch in s)
-        return spell_number(int(s.replace(".", "")))
+    def money(m):
+        whole, frac = int(m.group(1).replace(".", "")), m.group(2)
+        kurus = int((frac + "0")[:2]) if frac else 0
+        parts = ([f"{spell_number(whole)} lira"] if whole or not kurus else []) + \
+                ([f"{spell_number(kurus)} kuruş"] if kurus else [])
+        return " ".join(parts)
 
-    text = re.sub(r"%\s?(?=\d)", "yüzde ", text)
-    return re.sub(r"\d+:\d+|\d+(?:\.\d+)*(?:,\d+)?", spoken, text)
+    amount = r"(\d{1,3}(?:\.\d{3})+|\d+)(?:[.,](\d{1,2}))?"
+    t = re.sub(r"₺\s?" + amount + r"(?![\d.,]*\d)", money, t)
+    t = re.sub(r"(?<![\d.,])" + amount + r"\s?(?:TL\b|₺)(?!['’])", money, t)
+
+    t = re.sub(r"%\s?(?=\d)", "yüzde ", t)
+    t = re.sub(r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s?%", r"yüzde \1", t)
+
+    t = re.sub(r"(?<![\d./])(\d{1,2})([./])(\d{1,2})\2(\d{4})(?!\d|[./]\d)",
+               lambda m: _date(m.group(1), m.group(3), m.group(4)) or m.group(0), t)
+    t = re.sub(r"(?<![\d-])(\d{4})-(\d{2})-(\d{2})(?![\d-])",
+               lambda m: _date(m.group(3), m.group(2), m.group(1)) or m.group(0), t)
+
+    def clock(m):
+        hour, minute = int(m.group(1)), m.group(2)
+        if hour > 23 or int(minute) > 59:
+            return m.group(0)
+        return spell_number(hour) + (" " + _fraction(minute) if int(minute) else "")
+
+    t = re.sub(r"(?<![\d:])(\d{1,2}):(\d{2})(?![\d:])", clock, t)
+    # a dot is a clock separator only where the context says so: "saat 14.45", "14.45'te"
+    t = re.sub(r"(?i)(?<=\bsaat )(\d{1,2})\.(\d{2})(?!\d|[.,]\d)", clock, t)
+    t = re.sub(r"(?<![\d.,])(\d{1,2})\.(\d{2})(?=['’][dt][ae])", clock, t)
+
+    def phone(m):
+        groups = [("0" if m.group(1) == "0" else "") + m.group(2), m.group(3), m.group(4), m.group(5)]
+        lead = "artı doksan, " if m.group(1) != "0" else ""
+        return lead + ", ".join(_group(g) for g in groups)
+
+    t = re.sub(r"(?<![\d+])(\+90|0)[ (]{0,2}(\d{3})\)?[ -]?(\d{3})[ -]?(\d{2})[ -]?(\d{2})(?!\d)", phone, t)
+
+    def grouped(m):
+        return ", ".join(_digits(g) for g in m.group(0).split())
+
+    t = re.sub(r"\bTR(\d{2}(?: \d{4}){5} \d{2})\b", lambda m: "TR " + ", ".join(_digits(g) for g in m.group(1).split()), t)
+    t = re.sub(r"\bTR(\d{24})\b", lambda m: "TR " + ", ".join(_digits(g) for g in re.findall(r"^\d{2}|\d{4}|\d{2}$", m.group(1))), t)
+    t = re.sub(r"(?<!\d)(?<!\d )\d{4}(?: \d{4}){3}(?! ?\d)", grouped, t)
+
+    t = re.sub(r"(?<![\d.,])(\d{1,3})\.(?= [a-zçğıöşü])", lambda m: spell_ordinal(int(m.group(1))), t)
+    t = re.sub(r"(?<![\d.,])(\d+)['’]?(?:[ıiuü]?nc[ıiuü])\b", lambda m: spell_ordinal(int(m.group(1))), t)
+
+    # "TR12", "1250TL", "A4": a number glued to letters is read as its own word
+    t = re.sub(rf"(?<=[{_LETTER}])(?=\d)|(?<=\d)(?=[{_LETTER}])", " ", t)
+    return re.sub(r"\d+(?:\.\d+)*(?:,\d+)?", lambda m: _number(m.group(0)), t)
+
+
+# characters the model has no embedding for, mapped to ones it knows
+_SYMBOLS = str.maketrans({"!": ".", "–": "-", "—": "-", "“": "", "”": "", "„": "", '"': "",
+                          "‘": "'", "`": "'", "´": "'", "î": "i", "û": "u", "Â": "A", "Î": "İ", "Û": "U"})
 
 
 def normalize(text):
     """Light text normalization: transliterate foreign words, spell out digit
-    runs, collapse punctuation."""
+    runs, replace symbols the character vocabulary lacks, collapse punctuation."""
     t = text
     for k in sorted(BRAND, key=len, reverse=True):
         t = re.sub(r"(?i)\b" + re.escape(k) + r"\b", BRAND[k], t)
 
     t = expand_digits(t)
-    t = t.replace("...", ", ").replace("…", ", ").replace(" — ", ", ").replace(" - ", ", ")
+    t = t.replace("...", ", ").replace("…", ", ").replace(" — ", ", ").replace(" - ", ", ").replace(" – ", ", ")
+    t = re.sub(r"\s*\(\s*", ", ", t)  # a parenthesis is read as an aside
+    t = re.sub(r"\s*\)", ",", t)
+    t = t.translate(_SYMBOLS)
+    t = re.sub(r"\s+([,.;:?])", r"\1", t)
+    t = re.sub(r",(?:\s*,)+", ",", t)
+    t = re.sub(r",\s*\.", ".", t)
     t = re.sub(r"\s+", " ", t).strip()
     return t
 
