@@ -20,14 +20,22 @@ import soundfile as sf
 import torch
 
 from freyatts.model import LEYLA_SEED
+from freyatts.pipeline import normalize
 
 SAMPLE_RATE = 48000
 SAMPLES_PER_FRAME = 1920  # 48 kHz audio over 25 Hz latents
 
 
 @torch.no_grad()
-def synthesize_batch(model, vae, char_to_id, texts, steps=32, seed=LEYLA_SEED, device="cuda"):
-    """Synthesize a list of texts in one padded batch. Returns a list of waveforms."""
+def synthesize_batch(model, vae, char_to_id, texts, steps=32, seed=LEYLA_SEED, device="cuda", do_norm=True):
+    """Synthesize a list of texts in one padded batch. Returns a list of waveforms.
+
+    Texts go through the same normalization as `FreyaTTS.synthesize` (digits spelled out, unknown symbols
+    replaced); pass `do_norm=False` for text that is already normalized. Long inputs are not split into
+    clauses here: keep each line to one short sentence.
+    """
+    if do_norm:
+        texts = [normalize(t) for t in texts]
     ids_list = [torch.tensor([char_to_id.get(ch, 1) for ch in t], device=device) for t in texts]
     max_chars = max(len(item) for item in ids_list)
     ids = torch.zeros(len(texts), max_chars, dtype=torch.long, device=device)
@@ -95,6 +103,8 @@ def main():
     args = parser.parse_args()
 
     texts = [ln.strip() for ln in open(args.texts, encoding="utf-8") if ln.strip()]
+    # normalize once here: spelled-out numbers are much longer than their digits, and batches are sorted by length
+    texts = [normalize(t) for t in texts]
     model, vae, char_to_id = load(args.model, args.device)
     os.makedirs(args.outdir, exist_ok=True)
 
@@ -103,7 +113,7 @@ def main():
     for start in range(0, len(order), args.batch_size):
         batch_idx = order[start : start + args.batch_size]
         wavs = synthesize_batch(model, vae, char_to_id, [texts[i] for i in batch_idx],
-                                steps=args.steps, device=args.device)
+                                steps=args.steps, device=args.device, do_norm=False)
         for idx, wav in zip(batch_idx, wavs):
             sf.write(os.path.join(args.outdir, f"{idx:04d}.wav"), wav, SAMPLE_RATE)
     print(f"wrote {len(texts)} files to {args.outdir}/")
